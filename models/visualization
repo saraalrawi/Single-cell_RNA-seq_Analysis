@@ -1,0 +1,23 @@
+ def visualize_latent_space(self, results, method='umap'):
+        """Visualize latent space using UMAP or t-SNE"""
+        latent_data = results['latent_representations']
+        labels = results['labels']
+        
+        # Add latent representations to adata for visualization
+        if hasattr(self, 'adata') and self.adata is not None:
+            # Create a new adata object for visualization
+            import anndata as ad
+            latent_adata = ad.AnnData(X=latent_data)
+            
+            # Add cell type labels
+            label_mapping = self.preprocessor.get_label_mapping()
+            cell_types = [label_mapping[label] for label in labels]
+            latent_adata.obs['cell_type'] = cell_types
+            
+            # Compute UMAP
+            sc.pp.neighbors(latent_adata, n_neighbors=15, n_pcs=latent_data.shape[1])
+            sc.tl.umap(latent_adata)
+            
+            # Plot
+            sc.pl.umap(latent_adata, color='cell_type', legend_loc='on data', 
+                      title='Latent Space Visualization (VAE)', frameon=False, save='.pdf')
