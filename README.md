@@ -30,7 +30,7 @@
 
 #### Option 1: Automated Setup (Recommended)
 ```bash
-git clone https://github.com/YOUR_USERNAME/Single-cell_RNA-seq_Analysis.git
+git clone https://github.com/saraalrawi/Single-cell_RNA-seq_Analysis.git
 cd Single-cell_RNA-seq_Analysis
 chmod +x install_dependencies.sh
 ./install_dependencies.sh
@@ -39,7 +39,7 @@ chmod +x install_dependencies.sh
 #### Option 2: Manual Installation
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/Single-cell_RNA-seq_Analysis.git
+git clone https://github.com/saraalrawi/Single-cell_RNA-seq_Analysis.git
 cd Single-cell_RNA-seq_Analysis
 
 # Create virtual environment
@@ -352,7 +352,7 @@ If you use this toolkit in your research, please cite:
 ```bibtex
 @software{single_cell_rnaseq_toolkit,
   title={Single-Cell RNA-seq Analysis Toolkit},
-  author={Your Name},
+  author={Sara J. Al-Rawi},
   year={2025},
   url={https://github.com/YOUR_USERNAME/Single-cell_RNA-seq_Analysis}
 }
