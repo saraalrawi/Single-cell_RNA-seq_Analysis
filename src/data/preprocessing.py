@@ -137,18 +137,24 @@ class SingleCellPreprocessor:
         
         # Calculate QC metrics
         sc.pp.calculate_qc_metrics(
-            adata, 
-            percent_top=None, 
-            log1p=False, 
+            adata,
+            qc_vars=['mt'],
+            percent_top=None,
+            log1p=False,
             inplace=True
         )
         
         # Store QC metrics for later analysis
         self.qc_metrics = {
             'n_genes_by_counts': adata.obs['n_genes_by_counts'].describe(),
-            'total_counts': adata.obs['total_counts'].describe(),
-            'pct_counts_mt': adata.obs['pct_counts_mt'].describe()
+            'total_counts': adata.obs['total_counts'].describe()
         }
+        
+        # Add mitochondrial percentage if mitochondrial genes exist
+        if 'pct_counts_mt' in adata.obs.columns:
+            self.qc_metrics['pct_counts_mt'] = adata.obs['pct_counts_mt'].describe()
+        else:
+            logger.warning("No mitochondrial genes found in the dataset")
         
         # Filter cells based on QC metrics
         n_cells_before = adata.n_obs
@@ -156,8 +162,9 @@ class SingleCellPreprocessor:
         # Remove cells with too many genes (likely doublets)
         adata = adata[adata.obs.n_genes_by_counts < self.max_genes, :]
         
-        # Remove cells with high mitochondrial content
-        adata = adata[adata.obs.pct_counts_mt < self.max_mt_percent, :]
+        # Remove cells with high mitochondrial content (if available)
+        if 'pct_counts_mt' in adata.obs.columns:
+            adata = adata[adata.obs.pct_counts_mt < self.max_mt_percent, :]
         
         n_cells_after = adata.n_obs
         logger.info(f"After QC filtering: {adata.shape}")
