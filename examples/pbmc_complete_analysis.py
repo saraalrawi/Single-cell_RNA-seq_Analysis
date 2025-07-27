@@ -10,7 +10,7 @@ Features:
 - Quality control and filtering
 - Dimensionality reduction and clustering
 - Deep learning with scVAE
-- Pharma-relevant analysis
+- Pharma Industry-relevant analysis
 - Comprehensive visualization
 """
 
@@ -79,16 +79,25 @@ def main():
     # Initialize analyzer
     analyzer = SingleCellAnalyzer(preprocessor)
     
-    # Preprocess data
+    # Preprocess data first without cell type encoding
     adata_processed = analyzer.load_and_preprocess_data(
-        adata, 
-        cell_type_col='cell_type' if 'cell_type' in adata.obs.columns else None
+        adata,
+        cell_type_col=None  # Don't encode yet as we don't have cell types
     )
     
     # Add cell type annotations if not present
     if 'cell_type' not in adata_processed.obs.columns:
         print("Adding cell type annotations...")
         adata_processed = pbmc_loader.add_manual_annotations(adata_processed)
+    
+    # Now encode the cell types
+    if 'cell_type' in adata_processed.obs.columns:
+        print("Encoding cell types...")
+        analyzer.preprocessor.label_encoder.fit(adata_processed.obs['cell_type'])
+        adata_processed.obs['cell_type_encoded'] = analyzer.preprocessor.label_encoder.transform(
+            adata_processed.obs['cell_type']
+        )
+        analyzer.adata = adata_processed  # Update the analyzer's adata
     
     # Add pharma-relevant context
     print("Adding pharma-relevant annotations...")
@@ -157,7 +166,18 @@ def main():
         label_mapping=label_mapping,
         method='umap',
         title='scVAE Latent Space - PBMC Cell Types',
-        save='pbmc_latent_space.png'
+        save='plots/pbmc_latent_space_umap.png'
+    )
+    
+    # Also create a t-SNE visualization
+    print("Generating t-SNE visualization...")
+    visualizer.plot_latent_space(
+        latent_data=results['latent_representations'],
+        labels=results['labels'],
+        label_mapping=label_mapping,
+        method='tsne',
+        title='scVAE Latent Space (t-SNE) - PBMC Cell Types',
+        save='plots/pbmc_latent_space_tsne.png'
     )
     
     # Plot cell type distribution
@@ -166,7 +186,7 @@ def main():
         labels=results['labels'],
         label_mapping=label_mapping,
         title='PBMC Cell Type Distribution',
-        save='pbmc_cell_distribution.png'
+        save='plots/pbmc_cell_distribution.png'
     )
     
     # Plot reconstruction quality
@@ -184,7 +204,7 @@ def main():
             original=original_data,
             reconstructed=results['reconstructions'],
             n_samples=500,
-            save='pbmc_reconstruction_quality.png'
+            save='plots/pbmc_reconstruction_quality.png'
         )
     
     # Step 7: Pharma-Relevant Analysis
