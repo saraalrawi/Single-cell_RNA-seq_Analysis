@@ -24,7 +24,7 @@
 
 - Python 3.8 or higher
 - 8GB+ RAM (16GB+ recommended for large datasets)
-- Optional: CUDA-compatible GPU for acceleration
+- Optional: CUDA-compatible GPU for acceleration (MPS support for Apple Silicon)
 
 ### Installation
 
@@ -74,6 +74,9 @@ python run_pipeline.py
 
 # Or run the detailed example
 python examples/pbmc_complete_analysis.py
+
+# Generate comprehensive visualizations
+python examples/visualize_pbmc_clusters.py
 ```
 
 ## 📊 Pipeline Overview
@@ -121,15 +124,21 @@ graph TD
 
 ```
 📁 results/
-├── 📊 pbmc_analysis_complete.h5ad    # Processed AnnData object
-├── 🧠 scvae_model.pth                # Trained PyTorch model
-├── 📈 analysis_summary.csv           # Performance metrics
-├── 📋 training_log.txt               # Training progress
-└── 🖼️ plots/                         # Visualization outputs
-    ├── umap_embedding.png
-    ├── cell_type_distribution.png
-    ├── gene_expression_heatmap.png
-    └── reconstruction_quality.png
+├── 📊 pbmc_processed_with_analysis.h5ad  # Processed AnnData object
+├── 🧠 pbmc_scvae_model.pth              # Trained PyTorch model
+├── 📈 pbmc_analysis_results.csv         # Analysis results
+└── 📋 training_log.txt                  # Training progress
+
+📁 plots/
+├── 🗺️ pbmc_umap_cell_types.png         # UMAP with cell type annotations
+├── 🔬 pbmc_umap_leiden.png              # UMAP with Leiden clusters
+├── 📊 pbmc_tsne_cell_types.png         # t-SNE visualization
+├── 📈 pbmc_cell_type_distribution.png   # Cell type proportions
+├── 🎯 pbmc_marker_genes_dotplot.png     # Marker gene expression patterns
+├── 🧬 pbmc_key_markers_umap.png         # Key marker gene expression
+├── 📊 pbmc_qc_metrics.png               # Quality control metrics
+├── 🔄 pbmc_latent_space_umap.png        # VAE latent space (UMAP)
+└── 🔄 pbmc_latent_space_tsne.png        # VAE latent space (t-SNE)
 ```
 
 ## 🏗️ Project Structure
@@ -147,7 +156,8 @@ graph TD
 │   └── 📈 visualization/            # Plotting tools
 │       └── plots.py                # Comprehensive visualizations
 ├── 📚 examples/                     # Usage examples
-│   └── pbmc_complete_analysis.py   # Complete pipeline demo
+│   ├── pbmc_complete_analysis.py   # Complete pipeline demo
+│   └── visualize_pbmc_clusters.py  # Cluster visualization script
 ├── 🧪 tests/                       # Test suite
 ├── 📖 Documentation files          # Setup and usage guides
 ├── 🚀 run_pipeline.py              # One-command analysis
@@ -345,18 +355,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[AnnData](https://anndata.readthedocs.io/)** - Annotated data structures
 - **[PBMC Dataset](https://www.10xgenomics.com/)** - 10x Genomics public datasets
 
-## 📊 Citation
+## 📚 Key Scientific References
 
-If you use this toolkit in your research, please cite:
+### Single-Cell RNA-seq Analysis
+1. **Luecken, M.D. & Theis, F.J.** (2019). Current best practices in single-cell RNA-seq analysis: a tutorial. *Molecular Systems Biology*, 15(6), e8746. [DOI: 10.15252/msb.20188746](https://doi.org/10.15252/msb.20188746)
 
-```bibtex
-@software{single_cell_rnaseq_toolkit,
-  title={Single-Cell RNA-seq Analysis Toolkit},
-  author={Sara J. Al-Rawi},
-  year={2025},
-  url={https://github.com/YOUR_USERNAME/Single-cell_RNA-seq_Analysis}
-}
-```
+2. **Wolf, F.A., Angerer, P. & Theis, F.J.** (2018). SCANPY: large-scale single-cell gene expression data analysis. *Genome Biology*, 19, 15. [DOI: 10.1186/s13059-017-1382-0](https://doi.org/10.1186/s13059-017-1382-0)
+
+### Quality Control in scRNA-seq
+3. **Ilicic, T. et al.** (2016). Classification of low quality cells from single-cell RNA-seq data. *Genome Biology*, 17, 29. [DOI: 10.1186/s13059-016-0888-1](https://doi.org/10.1186/s13059-016-0888-1)
+
+4. **McCarthy, D.J. et al.** (2017). Scater: pre-processing, quality control, normalization and visualization of single-cell RNA-seq data in R. *Bioinformatics*, 33(8), 1179-1186. [DOI: 10.1093/bioinformatics/btw777](https://doi.org/10.1093/bioinformatics/btw777)
+
+### Deep Learning for Single-Cell Analysis
+5. **Lopez, R. et al.** (2018). Deep generative modeling for single-cell transcriptomics. *Nature Methods*, 15(12), 1053-1058. [DOI: 10.1038/s41592-018-0229-2](https://doi.org/10.1038/s41592-018-0229-2)
+
+6. **Eraslan, G. et al.** (2019). Single-cell RNA-seq denoising using a deep count autoencoder. *Nature Communications*, 10, 390. [DOI: 10.1038/s41467-018-07931-2](https://doi.org/10.1038/s41467-018-07931-2)
+
+### PBMC Cell Type Markers
+7. **Hao, Y. et al.** (2021). Integrated analysis of multimodal single-cell data. *Cell*, 184(13), 3573-3587. [DOI: 10.1016/j.cell.2021.04.048](https://doi.org/10.1016/j.cell.2021.04.048)
+
+8. **Stuart, T. et al.** (2019). Comprehensive Integration of Single-Cell Data. *Cell*, 177(7), 1888-1902. [DOI: 10.1016/j.cell.2019.05.031](https://doi.org/10.1016/j.cell.2019.05.031)
+
+For the methods implemented, please also cite the relevant papers listed in the Key Scientific References section above.
 
 ## 🔗 Related Projects
 
