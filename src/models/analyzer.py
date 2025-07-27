@@ -68,7 +68,10 @@ class SingleCellAnalyzer:
         self.adata = self.preprocessor.preprocess_adata(adata, cell_type_col, copy=copy)
         
         logger.info(f"Preprocessed data shape: {self.adata.shape}")
-        logger.info(f"Number of cell types: {len(self.adata.obs[cell_type_col].unique())}")
+        if cell_type_col and cell_type_col in self.adata.obs.columns:
+            logger.info(f"Number of cell types: {len(self.adata.obs[cell_type_col].unique())}")
+        else:
+            logger.info("No cell type annotations available")
         
         return self.adata
     
@@ -263,6 +266,10 @@ class SingleCellAnalyzer:
         with torch.no_grad():
             for batch in val_loader:
                 x, y = batch
+                # Move data to the same device as the model
+                device = next(self.model.parameters()).device
+                x = x.to(device)
+                y = y.to(device)
                 outputs = self.model(x)
                 
                 # Compute loss
@@ -368,9 +375,12 @@ class SingleCellAnalyzer:
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         
         latent_reps = []
+        device = next(self.model.parameters()).device
+        
         with torch.no_grad():
             for batch in dataloader:
                 x, _ = batch
+                x = x.to(device)
                 mu, _ = self.model.encode(x)
                 latent_reps.extend(mu.cpu().numpy())
         
