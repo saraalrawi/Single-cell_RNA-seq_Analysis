@@ -214,31 +214,60 @@ model = analyzer.train_model(
 
 # Pharmaceutical analysis
 adata = loader.add_pharma_context(adata)
-visualizer.plot_drug_targets(adata, ['CD19', 'CD20', 'PDCD1'])
-visualizer.plot_clinical_pathways(adata, pathway_list=['immune_response', 'apoptosis'])
+
+# Access target expression scores
+target_scores = adata.obs[[col for col in adata.obs.columns if '_target_score' in col]]
+print("Drug target expression scores:", target_scores.head())
+
+# Access pathway scores
+pathway_scores = adata.obs[['inflammation_score', 'immune_activation_score', 'exhaustion_score']]
+print("Clinical pathway scores:", pathway_scores.head())
+
+# Visualize gene expression for drug targets
+visualizer.plot_gene_expression(adata, ['CD19', 'CD20', 'PDCD1'], groupby='cell_type')
 ```
 
 ## 🔬 Core Components
 
 ### Data Processing (`src/data/`)
 - **`SingleCellPreprocessor`**: Quality control, normalization, feature selection
-- **`PBMCDataLoader`**: PBMC dataset handling with pharma annotations
+- **`PBMCDataLoader`**: PBMC dataset handling with pharmaceutical annotations
+  - `add_pharma_context()`: Adds drug target and pathway scores
+  - `add_manual_annotations()`: Cell type classification
+  - Drug targets: CD19, CD20, PDCD1, CSF1R, CD4, CD8A, etc.
 - **`SingleCellDataset`**: PyTorch-compatible dataset with train/val splitting
 
 ### Deep Learning Models (`src/models/`)
 - **`scVAE`**: Variational Autoencoder with PyTorch Lightning
 - **`SingleCellAnalyzer`**: High-level analysis orchestrator
+  - Model training and evaluation
+  - Latent space analysis for biomarker discovery
+  - Classification metrics for cell type prediction
 
 ### Visualization (`src/visualization/`)
 - **`Visualizer`**: Comprehensive plotting toolkit
 - Quality control plots, UMAP/t-SNE embeddings, gene expression analysis
+- `plot_gene_expression()`: Visualize drug target expression across cell types
+- `plot_latent_space()`: Analyze molecular signatures in latent space
 
 ## 💊 Pharmaceutical Applications
 
-### 🎯 Drug Discovery
+### 🎯 Drug Discovery Features (Implemented)
 - **Target Expression Analysis**: Quantify therapeutic target expression across cell types
+  - **Implementation**: [`src/data/pbmc_loader.py`](src/data/pbmc_loader.py) - `add_pharma_context()` method (lines 302-311)
+  - **Targets**: CSF1R, CD14, CD4, CD19, CD20, PDCD1, LAG3, and more
+  - **Output**: Cell-type-specific target expression scores in `adata.obs`
+
 - **Pathway Scoring**: Evaluate disease-relevant biological pathways
+  - **Implementation**: [`src/data/pbmc_loader.py`](src/data/pbmc_loader.py) - `add_pharma_context()` method (lines 319-327)
+  - **Pathways**: Inflammation, immune activation, T-cell exhaustion
+  - **Markers**: IL1B, TNF, IL6, CD69, PDCD1, HAVCR2, TIGIT
+  - **Output**: Pathway-specific scores in `adata.obs`
+
 - **Biomarker Identification**: Discover predictive molecular signatures
+  - **Framework**: [`src/models/analyzer.py`](src/models/analyzer.py) - `SingleCellAnalyzer` class
+  - **Features**: Latent representations, classification metrics, cell type predictions
+  - **Status**: Basic framework implemented, advanced biomarker methods available for extension
 
 ### 🏥 Clinical Applications
 - **Patient Stratification**: Identify patient subgroups for personalized therapy
