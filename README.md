@@ -259,7 +259,7 @@ visualizer.plot_gene_expression(adata, ['CD19', 'CD20', 'PDCD1'], groupby='cell_
   - **Output**: Cell-type-specific target expression scores in `adata.obs`
 
 - **Pathway Scoring**: Evaluate disease-relevant biological pathways
-  - **Implementation**: [`src/data/pbmc_loader.py`](src/data/pbmc_loader.py) - `add_pharma_context()` method (lines 319-327)
+  - **Implementation**: [`src/data/pbmc_loader.py`](src/data/pbmc_loader.py) - `add_pharma_context()` method
   - **Pathways**: Inflammation, immune activation, T-cell exhaustion
   - **Markers**: IL1B, TNF, IL6, CD69, PDCD1, HAVCR2, TIGIT
   - **Output**: Pathway-specific scores in `adata.obs`
